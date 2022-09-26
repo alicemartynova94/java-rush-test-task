@@ -8,7 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 
 public interface PlayerService {
-    public Page<Player> getAllPlayers(Specification<Player> specification, Pageable pageable);
+    public List<Player> getAllPlayers();
 
     public Player getPlayer(long id);
 

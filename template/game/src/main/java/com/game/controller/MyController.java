@@ -4,11 +4,10 @@ import com.game.entity.Player;
 import com.game.exceptions.PlayerNotFoundOrIDInvalidException;
 import com.game.exceptions.UnableToCreateNewPlayerException;
 import com.game.service.PlayerService;
+import com.game.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.Calendar;
 import java.util.List;
@@ -22,8 +21,8 @@ public class MyController {
 
 
     @GetMapping("/players")
-    public Page<Player> getPlayersList(Specification<Player> specification, Pageable pageable){
-        return playerService.getAllPlayers(specification, pageable);
+    public List<Player> getPlayersList(){
+        return playerService.getAllPlayers();
     }
 
     @GetMapping("/players/count")
@@ -41,7 +40,7 @@ public class MyController {
     }
 
     @GetMapping("/players/{id}")
-    public Player getPlayer (@PathVariable int id){
+    public Player getPlayer (@PathVariable long id){
         Player player = playerService.getPlayer(id);
         if(player==null){
             throw new PlayerNotFoundOrIDInvalidException("There is no such player");
@@ -74,17 +73,20 @@ public class MyController {
          if(player.getBirthday() == null || calendar.get(Calendar.YEAR) < 2000L || calendar.get(Calendar.YEAR) > 3000L){
              throw new UnableToCreateNewPlayerException("Birthday is invalid");
          }
+        player.setLevel(Util.calculateCurrentLevel(player.getExperience()));
+        player.setUntilNextLevel(Util.calculateExperience(player.getExperience(), player.getLevel()));
         playerService.createPlayer(player);
     }
 
     @PostMapping("/players/{id}")
     public void updatePlayer(@PathVariable int id){
         Player player = playerService.getPlayer(id);
-        //
         if(player==null){
             throw new PlayerNotFoundOrIDInvalidException("There is no such player");
         }
-
+        player.setLevel(Util.calculateCurrentLevel(player.getExperience()));
+        player.setUntilNextLevel(Util.calculateExperience(player.getExperience(), player.getLevel()));
+        playerService.updatePlayer(player);
     }
 
     @GetMapping("/players/name/{name}")

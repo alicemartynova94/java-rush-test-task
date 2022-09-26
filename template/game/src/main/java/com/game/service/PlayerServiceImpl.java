@@ -3,9 +3,6 @@ package com.game.service;
 import com.game.repository.PlayerRepository;
 import com.game.entity.Player;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -17,11 +14,10 @@ public class PlayerServiceImpl implements PlayerService{
     private PlayerRepository playerRepository;
 
     @Override
-    public Page<Player> getAllPlayers(Specification<Player> specification, Pageable pageable) {
-        return playerRepository.findAll(specification,pageable);
+    public List<Player> getAllPlayers() {
+        return playerRepository.findAll();
     }
 
-    //возможно нужно переделать
     @Override
     public Long getPlayersCount() {
         return playerRepository.count();
