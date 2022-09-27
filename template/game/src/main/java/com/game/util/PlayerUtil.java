@@ -1,8 +1,6 @@
 package com.game.util;
 
-import com.game.entity.Player;
-
-public class Util {
+public class PlayerUtil {
 
     public static Integer calculateCurrentLevel(Integer experence){
         Integer result = (((int)Math.sqrt(2500 + 200 * experence))-50)/100;

@@ -1,16 +1,17 @@
 package com.game.repository;
 
 import com.game.entity.Player;
+import com.game.entity.PlayerPage;
+import com.game.entity.PlayerSearchCriteria;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
 
 import java.util.List;
 
-public interface PlayerRepository extends JpaRepository<Player, Long>, JpaSpecificationExecutor<Player> {
-
-    List<Player> findByNameContainingIgnoreCase(String name);
-
-    List<Player> findByTitleContainingIgnoreCase(String title);
+public interface PlayerRepository extends JpaRepository<Player, Long> {
 
 
+    Page<Player> findAll(PlayerPage playerPage, PlayerSearchCriteria playerSearchCriteria);
 }

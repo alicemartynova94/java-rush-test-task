@@ -1,18 +1,18 @@
 package com.game.service;
 
 import com.game.entity.Player;
+import com.game.entity.PlayerPage;
+import com.game.entity.PlayerSearchCriteria;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
 public interface PlayerService {
-    public List<Player> getAllPlayers();
+    public Page<Player> getAllPlayers(PlayerPage playerPage, PlayerSearchCriteria playerSearchCriteria);
 
     public Player getPlayer(long id);
 
-    public void createPlayer(Player player);
+    public Player createPlayer(Player player);
 
     public void updatePlayer (Player player);
 
@@ -20,8 +20,5 @@ public interface PlayerService {
 
     public Long getPlayersCount();
 
-    public List<Player> findByNameContainingIgnoreCase(String name);
-
-    public List<Player> findByTitleContainingIgnoreCase(String title);
 
 }

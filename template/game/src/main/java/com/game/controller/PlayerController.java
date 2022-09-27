@@ -1,28 +1,39 @@
 package com.game.controller;
 
 import com.game.entity.Player;
+import com.game.entity.PlayerPage;
+import com.game.entity.PlayerSearchCriteria;
 import com.game.exceptions.PlayerNotFoundOrIDInvalidException;
 import com.game.exceptions.UnableToCreateNewPlayerException;
 import com.game.service.PlayerService;
-import com.game.util.Util;
+import com.game.util.PlayerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.awt.print.Pageable;
 import java.util.Calendar;
 import java.util.List;
 
 @RestController
 @RequestMapping("/rest")
-public class MyController {
+public class PlayerController {
 
     @Autowired
     private PlayerService playerService;
 
 
     @GetMapping("/players")
-    public List<Player> getPlayersList(){
-        return playerService.getAllPlayers();
+    public ResponseEntity <Page<Player>> getPlayersList(PlayerPage playerPage,
+                                                        PlayerSearchCriteria playerSearchCriteria){
+
+        return new ResponseEntity<>(playerService.getAllPlayers(playerPage,playerSearchCriteria),
+                HttpStatus.OK);
     }
 
     @GetMapping("/players/count")
@@ -49,7 +60,7 @@ public class MyController {
     }
 
     @PostMapping("/players")
-    public void createPlayer(@RequestBody Player player){
+    public ResponseEntity<Player> createPlayer(@RequestBody Player player){
         if(player.getName().length() > 12 || player.getName() == null || player.getName().isEmpty()){
             throw new UnableToCreateNewPlayerException("The name of this player is invalid");
         }
@@ -73,9 +84,9 @@ public class MyController {
          if(player.getBirthday() == null || calendar.get(Calendar.YEAR) < 2000L || calendar.get(Calendar.YEAR) > 3000L){
              throw new UnableToCreateNewPlayerException("Birthday is invalid");
          }
-        player.setLevel(Util.calculateCurrentLevel(player.getExperience()));
-        player.setUntilNextLevel(Util.calculateExperience(player.getExperience(), player.getLevel()));
-        playerService.createPlayer(player);
+        player.setLevel(PlayerUtil.calculateCurrentLevel(player.getExperience()));
+        player.setUntilNextLevel(PlayerUtil.calculateExperience(player.getExperience(), player.getLevel()));
+        return  new ResponseEntity<>(playerService.createPlayer(player), HttpStatus.OK);
     }
 
     @PostMapping("/players/{id}")
@@ -84,20 +95,9 @@ public class MyController {
         if(player==null){
             throw new PlayerNotFoundOrIDInvalidException("There is no such player");
         }
-        player.setLevel(Util.calculateCurrentLevel(player.getExperience()));
-        player.setUntilNextLevel(Util.calculateExperience(player.getExperience(), player.getLevel()));
+        player.setLevel(PlayerUtil.calculateCurrentLevel(player.getExperience()));
+        player.setUntilNextLevel(PlayerUtil.calculateExperience(player.getExperience(), player.getLevel()));
         playerService.updatePlayer(player);
     }
 
-    @GetMapping("/players/name/{name}")
-    public List<Player> showAllPlayersByName(@PathVariable String name){
-        List<Player> players = playerService.findByNameContainingIgnoreCase(name);
-        return players;
-    }
-
-    @DeleteMapping("/players/title/{title}")
-    public List<Player> showAllPlayersByTitle(@PathVariable String title){
-        List<Player> players = playerService.findByTitleContainingIgnoreCase(title);
-        return players;
-    }
 }

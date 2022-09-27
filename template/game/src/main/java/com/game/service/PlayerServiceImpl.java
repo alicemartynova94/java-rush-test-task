@@ -1,8 +1,12 @@
 package com.game.service;
 
+import com.game.entity.PlayerPage;
+import com.game.entity.PlayerSearchCriteria;
+import com.game.repository.PlayerCriteriaRepository;
 import com.game.repository.PlayerRepository;
 import com.game.entity.Player;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -12,10 +16,18 @@ public class PlayerServiceImpl implements PlayerService{
 
     @Autowired
     private PlayerRepository playerRepository;
+    private final PlayerCriteriaRepository playerCriteriaRepository;
+
+    public PlayerServiceImpl(PlayerRepository playerRepository,
+                             PlayerCriteriaRepository playerCriteriaRepository) {
+        this.playerCriteriaRepository = playerCriteriaRepository;
+        this.playerRepository = playerRepository;
+    }
 
     @Override
-    public List<Player> getAllPlayers() {
-        return playerRepository.findAll();
+    public Page<Player> getAllPlayers(PlayerPage playerPage,
+                                      PlayerSearchCriteria playerSearchCriteria) {
+        return playerRepository.findAll(playerPage, playerSearchCriteria);
     }
 
     @Override
@@ -39,8 +51,9 @@ public class PlayerServiceImpl implements PlayerService{
     }
 
     @Override
-    public void createPlayer(Player player) {
-        playerRepository.save(player);
+    public Player createPlayer(Player player) {
+
+        return playerRepository.save(player);
     }
 
     @Override
@@ -49,16 +62,5 @@ public class PlayerServiceImpl implements PlayerService{
         playerRepository.save(player);
     }
 
-    @Override
-    public List<Player> findByNameContainingIgnoreCase(String name) {
-        List<Player> players = playerRepository.findByNameContainingIgnoreCase(name);
-        return players;
-    }
-
-    @Override
-    public List<Player> findByTitleContainingIgnoreCase(String title) {
-        List<Player> players = playerRepository.findByTitleContainingIgnoreCase(title);
-        return players;
-    }
 
 }
